@@ -9,10 +9,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "npm init -y",
   "dependencies": {
     "amqplib": "^0.10.4",
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
-  }
+  },
+  "devDependencies": {}
 }

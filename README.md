@@ -1,5 +1,14 @@
 # Projet Chat
 
+## Commandes
+```bash
+npm init -y
+```
+```bash
+node server.js
+```
+
+
 Dépendances : pip install fastapi uvicorn pika python-socketio
 
 Exécuter le projet en faisant : uvicorn app:app --reload
