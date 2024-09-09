@@ -11,11 +11,13 @@
             const urlParams = new URLSearchParams(window.location.search);
             const username = urlParams.get('username');
 
+            // Redirige vers la page de connexion si le nom d'utilisateur n'est pas fourni
             if (!username) {
                 window.location.href = '/';
                 return;
             }
 
+            // Envoyer le nom d'utilisateur au serveur
             socket.emit('setUsername', username, (response) => {
                 if (!response.success) {
                     alert(response.message);
@@ -28,19 +30,23 @@
             const chatWindow = document.getElementById('chatWindow');
             const userList = document.getElementById('userList');
 
+            // Envoyer un message lorsque le formulaire est soumis
             messageForm.addEventListener('submit', (event) => {
-                event.preventDefault();
+                event.preventDefault(); // Empêche le formulaire de se soumettre normalement
                 const message = messageInput.value;
+                // Envoyer le message au serveur
                 socket.emit('sendMessage', message);
-                messageInput.value = '';
+                messageInput.value = ''; // Réinitialiser le champ de saisie
             });
 
+            // Afficher les messages reçus
             socket.on('receiveMessage', (data) => {
                 const { user, message } = data;
                 chatWindow.innerHTML += `<p><strong>${user}:</strong> ${message}</p>`;
-                chatWindow.scrollTop = chatWindow.scrollHeight;
+                chatWindow.scrollTop = chatWindow.scrollHeight; // Faire défiler vers le bas
             });
 
+            // Mettre à jour la liste des utilisateurs connectés
             socket.on('updateUserList', (users) => {
                 userList.innerHTML = users.map(user => `<li>${user}</li>`).join('');
             });

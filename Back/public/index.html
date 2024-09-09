@@ -13,13 +13,16 @@
             const usernameInput = document.getElementById('username');
 
             form.addEventListener('submit', (event) => {
-                event.preventDefault();
+                event.preventDefault(); // Empêche le formulaire de se soumettre normalement
                 const username = usernameInput.value;
 
+                // Envoyer le nom d'utilisateur au serveur pour vérification
                 socket.emit('setUsername', username, (response) => {
                     if (response.success) {
+                        // Rediriger vers la page de chat si le nom est disponible
                         window.location.href = `/chat.html?username=${encodeURIComponent(username)}`;
                     } else {
+                        // Afficher un message d'erreur si le nom est déjà pris
                         alert(response.message);
                     }
                 });
