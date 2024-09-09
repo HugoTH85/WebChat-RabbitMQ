@@ -1,19 +1,31 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 import pika
 import threading
 import time
-from typing import List
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import socketio
 
+# Initialisation de l'application FastAPI et du serveur Socket.IO
 app = FastAPI()
+sio = socketio.AsyncServer(async_mode='asgi')
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Setup RabbitMQ
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 exchange = 'direct_exchange'
+
+# Configuration de Socket.IO avec FastAPI
+sio_app = socketio.ASGIApp(sio, app)
+app.mount("/socket.io/", sio_app)
 
 class ChatMessage(BaseModel):
     message: str
@@ -24,24 +36,19 @@ def setup_queue(user_queue: str, routing_key_receive: str):
     channel.queue_declare(queue=user_queue, durable=False)
     channel.queue_bind(queue=user_queue, exchange=exchange, routing_key=routing_key_receive)
 
-def receive_messages(user_queue: str, routing_key_receive: str, sio):
+def receive_messages(user_queue: str, routing_key_receive: str):
     def callback(ch, method, properties, body):
         timestamp = time.strftime('%H:%M:%S')
         message = body.decode()
-        sio.emit('receive_message', {'msg': message, 'time': timestamp, 'user': routing_key_receive.split('_')[0]}, broadcast=True)
+        # Envoyer le message à tous les clients connectés
+        sio.emit('receive_message', {'msg': message, 'time': timestamp, 'user': routing_key_receive.split('_')[0]}, namespace='/')
 
     channel.basic_consume(queue=user_queue, on_message_callback=callback, auto_ack=True)
     channel.start_consuming()
 
-# Socket.IO setup
-sio = socketio.AsyncServer(async_mode='asgi')
-sio_app = socketio.ASGIApp(sio, app)
-
 @app.on_event("startup")
 async def startup_event():
-    # Configure the RabbitMQ queue based on the user
     user = input("Enter 'user1' or 'user2': ").strip().lower()
-    
     if user == 'user1':
         user_queue = 'user1_queue'
         routing_key_receive = 'user1_key'
@@ -54,11 +61,10 @@ async def startup_event():
         exit(1)
 
     setup_queue(user_queue, routing_key_receive)
-    threading.Thread(target=receive_messages, args=(user_queue, routing_key_receive, sio), daemon=True).start()
+    threading.Thread(target=receive_messages, args=(user_queue, routing_key_receive), daemon=True).start()
 
 @app.get("/", response_class=HTMLResponse)
 async def get_chat_page(request: Request):
-    user = request.query_params.get('user', 'user1')
     return HTMLResponse(content=open('templates/chat.html').read(), media_type='text/html')
 
 @sio.event
@@ -70,19 +76,17 @@ async def disconnect(sid):
     print(f"Client disconnected: {sid}")
 
 @sio.event
-async def send_message(sid, data: ChatMessage):
-    message = data.message
-    user = data.user
+async def send_message(sid, data):
+    message = data['message']
+    user = data['user']
     timestamp = time.strftime('%H:%M:%S')
-    if user == 'user1':
-        routing_key = 'user2_key'
-    else:
-        routing_key = 'user1_key'
+    
+    # Définir la clé de routage pour RabbitMQ
+    routing_key = 'user2_key' if user == 'user1' else 'user1_key'
+    
+    # Envoyer le message à RabbitMQ
     channel.basic_publish(exchange=exchange, routing_key=routing_key, body=message)
-    await sio.emit('receive_message', {'msg': message, 'time': timestamp, 'user': user}, room=sid)
+    
+    # Envoyer le message à tous les clients connectés
+    await sio.emit('receive_message', {'msg': message, 'time': timestamp, 'user': user}, broadcast=True)
 
-# Mount the static files directory
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Mount the Socket.IO ASGI application
-app.mount("/socket.io/", sio_app)
