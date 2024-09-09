@@ -1,0 +1,20 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "npm init -y",
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "back": "file:",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {}
+}

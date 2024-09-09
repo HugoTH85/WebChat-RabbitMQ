@@ -1,0 +1,17 @@
+services:
+  chat_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chat_app
+    hostname: chat_app
+    ports:
+      - 3000:3000
+  
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
