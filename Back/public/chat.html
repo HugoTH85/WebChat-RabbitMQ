@@ -3,37 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Room</title>
+    <title>Chat</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="chat.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+
+            if (!username) {
+                window.location.href = '/';
+                return;
+            }
+
+            socket.emit('setUsername', username, (response) => {
+                if (!response.success) {
+                    alert(response.message);
+                    window.location.href = '/';
+                }
+            });
+
+            const messageForm = document.getElementById('messageForm');
+            const messageInput = document.getElementById('messageInput');
+            const chatWindow = document.getElementById('chatWindow');
+            const userList = document.getElementById('userList');
+
+            messageForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const message = messageInput.value;
+                socket.emit('sendMessage', message);
+                messageInput.value = '';
+            });
+
+            socket.on('receiveMessage', (data) => {
+                const { user, message } = data;
+                chatWindow.innerHTML += `<p><strong>${user}:</strong> ${message}</p>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            });
+
+            socket.on('updateUserList', (users) => {
+                userList.innerHTML = users.map(user => `<li>${user}</li>`).join('');
+            });
+        });
+    </script>
 </head>
 <body>
     <h1>Chat Room</h1>
-    <div id="messages"></div>
-    <input id="messageInput" type="text" placeholder="Type a message" />
-    <button id="sendButton">Send</button>
-    <script>
-        const username = window.location.pathname.split('/')[2]; // Extraire le nom d'utilisateur de l'URL
-        const socket = io();
-        
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const messagesDiv = document.getElementById('messages');
-
-        sendButton.addEventListener('click', function() {
-            const message = messageInput.value;
-            if (message) {
-                socket.emit('send_message', { message, user: username });
-                messageInput.value = '';
-            }
-        });
-
-        socket.on('receive_message', function(data) {
-            const { msg, time, user } = data;
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${user} [${time}]: ${msg}`;
-            messagesDiv.appendChild(messageElement);
-        });
-    </script>
+    <div id="chatWindow" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
+    <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Type a message" required>
+        <button type="submit">Send</button>
+    </form>
+    <ul id="userList"></ul>
 </body>
 </html>

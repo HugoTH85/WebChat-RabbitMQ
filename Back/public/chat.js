@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     socket.on('receive_message', function(data) {
         const { msg, time, user } = data;
         const messageElement = document.createElement('div');
-        messageElement.textContent = `${user} [${time}]: ${msg}`;
+        messageElement.textContent = `[${time}] ${user} : ${msg}`;
         messagesDiv.appendChild(messageElement);
     });
 });
