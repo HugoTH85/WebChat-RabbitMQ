@@ -1,13 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.websockets import WebSocket, WebSocketDisconnect
 import pika
 import threading
 import time
 from typing import List
 from pydantic import BaseModel
-from socketio import ASGIApp
 import socketio
 
 app = FastAPI()
@@ -37,7 +35,7 @@ def receive_messages(user_queue: str, routing_key_receive: str, sio):
 
 # Socket.IO setup
 sio = socketio.AsyncServer(async_mode='asgi')
-sio_app = ASGIApp(sio, app)
+sio_app = socketio.ASGIApp(sio, app)
 
 @app.on_event("startup")
 async def startup_event():
@@ -87,4 +85,4 @@ async def send_message(sid, data: ChatMessage):
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Mount the Socket.IO ASGI application
-app.mount("/ws", sio_app)
+app.mount("/socket.io/", sio_app)

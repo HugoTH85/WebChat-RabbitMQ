@@ -1,6 +1,8 @@
 # Projet Chat
 
+Dépendances : pip install fastapi uvicorn pika python-socketio
 
+Exécuter le projet en faisant : uvicorn app:app --reload
 
 ## Getting started
 
