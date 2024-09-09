@@ -3,14 +3,22 @@ const http = require('http');
 const socketIo = require('socket.io');
 const amqp = require('amqplib');
 const path = require('path');
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
 const EXCHANGE = 'direct_exchange';
 
-app.use(express.static(path.join(__dirname, 'public'))); // Servir les fichiers statiques du répertoire public
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/chat/:user', (req, res) => {
+    const user = req.params.user;
+    res.sendFile(path.join(__dirname, 'public', 'chat.html'));
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 async function setupRabbitMQ() {
     const connection = await amqp.connect('amqp://localhost');
