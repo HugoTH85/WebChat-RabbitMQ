@@ -8,11 +8,6 @@ npm init -y
 node server.js
 ```
 
-
-Dépendances : pip install fastapi uvicorn pika python-socketio
-
-Exécuter le projet en faisant : uvicorn app:app --reload
-
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
