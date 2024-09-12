@@ -21,4 +21,5 @@ docker compose up
 ### 3 - Test our project with the Web Interfaces
 
 Go to ```localhost:15672``` for the RabbitMQ management dashboard
+
 Go to ```localhost:3000``` to test the group chat (open one tab per user)
