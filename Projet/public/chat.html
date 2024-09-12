@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
+    <link rel="stylesheet" href="style-chat.css">
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -61,5 +62,10 @@
         <button type="submit">Send</button>
     </form>
     <ul id="userList"></ul>
+    <label for="fileInput" style="display: inline-block; padding: 10px 20px; background-color: #ae00ff; color: white; border-radius: 5px; cursor: pointer; font-family: sans-serif; font-size: 14px;">
+        Choisir un fichier
+      </label>
+      <input type="file" id="fileInput" style="display: none;">
+    <!--<script src="file.js"></script> SI QUELQU'UN PEUT RESOUDRE CELA ON AURA LE FICHIER FONCTIONNEL avec le file.js-->
 </body>
 </html>

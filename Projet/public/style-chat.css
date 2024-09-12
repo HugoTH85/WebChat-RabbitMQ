@@ -1,0 +1,90 @@
+/* Style général du corps de la page */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #0c71dd, #4bcaae); /* Dégradé doux */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Style du titre */
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Style de la fenêtre de chat */
+#chatWindow {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    overflow-y: scroll;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style des messages dans la fenêtre de chat */
+#chatWindow p {
+    margin: 0;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+/* Style du formulaire de message */
+#messageForm {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Style du champ de saisie du message */
+#messageInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-right: 10px;
+}
+
+/* Style du bouton d'envoi */
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Style au survol du bouton */
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Style de la liste des utilisateurs */
+#userList {
+    margin-top: 20px;
+    padding: 0;
+    list-style-type: none;
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Style des éléments de la liste des utilisateurs */
+#userList li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,56 @@
+/* Style général du corps de la page */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #0c71dd, #4bcaae); /* Dégradé doux */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Style du formulaire */
+form {
+    background-color: #b8bfbc;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Style des labels */
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Style des champs de saisie */
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #e43f03;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style des boutons */
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Style au survol du bouton */
+button:hover {
+    background-color: #0575ec;
+}
+
+
