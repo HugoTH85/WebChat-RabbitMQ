@@ -12,7 +12,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const username = urlParams.get('username');
 
-            // Rediriger si pas de nom d'utilisateur
             if (!username) {
                 window.location.href = '/';
                 return;
@@ -29,7 +28,7 @@
             const messageInput = document.getElementById('messageInput');
             const chatWindow = document.getElementById('chatWindow');
             const fileInput = document.getElementById('fileInput');
-            const userList = document.getElementById('userList');  // Ajouter une référence à la liste des utilisateurs
+            const userList = document.getElementById('userList');
 
             // Envoyer un message
             messageForm.addEventListener('submit', (event) => {
@@ -39,10 +38,12 @@
                 messageInput.value = '';
             });
 
-            // Afficher les messages
+            // Afficher les messages avec l'heure locale
             socket.on('receiveMessage', (data) => {
-                const { user, message, time } = data;
-                chatWindow.innerHTML += `<p><strong>${time} ${user}:</strong> ${message}</p>`;
+                const { user, message } = data;
+                const now = new Date();
+                const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                chatWindow.innerHTML += `<p><strong>[${time}] ${user}:</strong> ${message}</p>`;
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             });
 
@@ -69,13 +70,13 @@
                 chatWindow.innerHTML += `<p><strong>Fichier reçu :</strong> <a href="/uploads/${fileName}" download>${fileName}</a></p>`;
             });
 
-            // Afficher la liste des utilisateurs connectés
+            // Mettre à jour la liste des utilisateurs connectés
             socket.on('updateUserList', (users) => {
-                userList.innerHTML = '';  // Réinitialiser la liste
+                userList.innerHTML = '';
                 users.forEach(user => {
                     const li = document.createElement('li');
                     li.textContent = user;
-                    userList.appendChild(li);  // Ajouter chaque utilisateur à la liste
+                    userList.appendChild(li);
                 });
             });
 
@@ -85,28 +86,76 @@
                 window.location.href = '/';
             });
 
-            // Afficher une erreur si le fichier n'est pas disponible
             socket.on('fileError', (errorMessage) => {
                 alert(errorMessage);
             });
         });
     </script>
+    <style>
+        /* Disposition de la page en deux colonnes : liste des utilisateurs à gauche et chat à droite */
+        .container {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+        }
+
+        #usersContainer {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-right: 20px;
+            overflow-y: auto;
+            max-width: 200px;
+        }
+
+        #chatContainer {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chatWindow {
+            flex-grow: 1;
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #messageForm {
+            display: flex;
+        }
+
+        #messageInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        #fileInput {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Chat Room</h1>
+    <div class="container">
+        <!-- Liste des utilisateurs connectés à gauche -->
+        <div id="usersContainer">
+            <h3>Utilisateurs connectés :</h3>
+            <ul id="userList"></ul>
+        </div>
 
-    <!-- Ajouter la section pour la liste des utilisateurs connectés -->
-    <div id="usersContainer" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
-        <h3>Utilisateurs connectés :</h3>
-        <ul id="userList"></ul>  <!-- Cet élément affichera la liste des utilisateurs -->
+        <!-- Zone de chat à droite -->
+        <div id="chatContainer">
+            <div id="chatWindow"></div>
+            <form id="messageForm">
+                <input type="text" id="messageInput" placeholder="Tapez un message" required>
+                <button type="submit">Envoyer</button>
+            </form>
+            <input type="file" id="fileInput">
+            <button id="logoutButton">Déconnexion</button>
+        </div>
     </div>
-
-    <div id="chatWindow" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
-    <form id="messageForm">
-        <input type="text" id="messageInput" placeholder="Type a message" required>
-        <button type="submit">Envoyer</button>
-    </form>
-    <input type="file" id="fileInput" style="margin-top: 20px;">
-    <button id="logoutButton" style="margin-top: 20px;">Déconnexion</button>
 </body>
 </html>

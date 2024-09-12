@@ -103,13 +103,11 @@ io.on('connection', (socket) => {
 
     // Gérer la réception des messages
     socket.on('sendMessage', async (message) => {
-        const timestamp = formatTime(new Date());  // Format 24 heures
-        const userColor = users[socket.username].color;  // Récupérer la couleur de l'utilisateur
-        const fullMessage = { user: socket.username, message, time: timestamp, color: userColor };
+        const fullMessage = { user: socket.username, message, color: users[socket.username].color };  // Supprimer l'heure côté serveur
         if (users[socket.username] && users[socket.username].channel) {
             await users[socket.username].channel.sendToQueue('chat_queue', Buffer.from(JSON.stringify(fullMessage)));
         }
-        io.emit('receiveMessage', fullMessage);
+        io.emit('receiveMessage', fullMessage);  // Envoyer le message sans l'heure
     });
 
     // Gérer la déconnexion manuelle
