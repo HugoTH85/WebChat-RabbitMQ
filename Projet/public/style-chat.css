@@ -88,3 +88,168 @@ button:hover {
     margin-bottom: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+/* Disposition de la page en deux colonnes : liste des utilisateurs à gauche et chat à droite */
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    background-color: #42024c; /* Couleur de fond adoucie */
+    gap: 20px; /* Espacement entre les colonnes */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Style de la liste des utilisateurs */
+#usersContainer {
+    flex: 1;
+    border: 1px solid #ddd; /* Bordure plus légère */
+    padding: 15px;
+    background-color: #fff; /* Fond blanc pour plus de contraste */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Légère ombre pour plus de profondeur */
+    overflow-y: auto;
+    max-width: 220px; /* Augmenté pour un peu plus d'espace */
+    border-radius: 8px; /* Coins arrondis */
+}
+
+#userList li {
+    list-style: none;
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: rgba(11, 207, 228, 0.882); /* Légère coloration bleue au survol */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transition fluide */
+}
+
+#userList li:hover {
+    background-color: rgba(0, 123, 255, 0.2); /* Accentuation du bleu au survol */
+    color: #007bff; /* Texte coloré au survol */
+}
+
+/* Style du conteneur de chat */
+#chatContainer {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff; /* Fond blanc */
+    border: 1px solid #ddd;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Fenêtre de chat */
+#chatWindow {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 2px;
+    margin-bottom: 10px;
+    background-color: #fafafa; /* Fond légèrement gris pour contraste */
+    border-radius: 8px;
+}
+
+/* Formulaire de message */
+#messageForm {
+    display: flex;
+    gap: 10px; /* Espacement entre l'input et le bouton */
+}
+
+/* Champ de saisie */
+#messageInput {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border 0.3s ease;
+}
+
+#messageInput:focus {
+    border-color: #007bff; /* Changement de couleur au focus */
+}
+
+/* Bouton d'envoi */
+#messageForm button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#messageForm button:hover {
+    background-color: #ef8f08;
+    transform: translateY(-2px); /* Légère animation de mouvement */
+}
+
+/* Bouton pour envoyer un fichier */
+#fileLabel {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+#fileLabel:hover {
+    background-color: #0056b3;
+}
+
+/* Masquer le champ d'input de fichier natif */
+#fileInput {
+    display: none;
+}
+
+/* Bouton de déconnexion */
+#logoutButton {
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#logoutButton:hover {
+    background-color: #c820e6;
+    transform: translateY(-2px); /* Légère animation de mouvement */
+}
+
+#fileLabel {
+    display: inline-block;
+    padding: 5px 0px;
+    background-color: #0dff00;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    text-align: center; /* Alignement du texte au centre */
+    width: 100%; /* Assurez-vous que le conteneur est suffisamment large pour centrer le texte */
+}
+#fileLabel:hover {
+    background-color: #0e0707;
+    transform: translateY(-2px); /* Légère animation de mouvement */
+}
+
+h1 {
+    font-family: 'Arial', sans-serif; /* Police moderne */
+    font-size: 2.5rem; /* Taille de police adaptée */
+    color: #000000; /* Couleur bleue pour rappeler le style des boutons */
+    text-align: center; /* Centrage du texte */
+    margin-bottom: 20px; /* Espacement inférieur */
+    letter-spacing: 1px; /* Espacement des lettres pour plus de style */
+    text-transform: uppercase; /* Texte en majuscules pour un effet percutant */
+    font-weight: 700; /* Texte en gras */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Ombre subtile pour donner de la profondeur */
+}
