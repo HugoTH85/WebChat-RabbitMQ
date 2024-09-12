@@ -29,6 +29,7 @@
             const messageInput = document.getElementById('messageInput');
             const chatWindow = document.getElementById('chatWindow');
             const fileInput = document.getElementById('fileInput');
+            const userList = document.getElementById('userList');  // Ajouter une référence à la liste des utilisateurs
 
             // Envoyer un message
             messageForm.addEventListener('submit', (event) => {
@@ -68,6 +69,16 @@
                 chatWindow.innerHTML += `<p><strong>Fichier reçu :</strong> <a href="/uploads/${fileName}" download>${fileName}</a></p>`;
             });
 
+            // Afficher la liste des utilisateurs connectés
+            socket.on('updateUserList', (users) => {
+                userList.innerHTML = '';  // Réinitialiser la liste
+                users.forEach(user => {
+                    const li = document.createElement('li');
+                    li.textContent = user;
+                    userList.appendChild(li);  // Ajouter chaque utilisateur à la liste
+                });
+            });
+
             // Déconnexion manuelle
             document.getElementById('logoutButton').addEventListener('click', () => {
                 socket.emit('disconnectUser');
@@ -83,6 +94,13 @@
 </head>
 <body>
     <h1>Chat Room</h1>
+
+    <!-- Ajouter la section pour la liste des utilisateurs connectés -->
+    <div id="usersContainer" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+        <h3>Utilisateurs connectés :</h3>
+        <ul id="userList"></ul>  <!-- Cet élément affichera la liste des utilisateurs -->
+    </div>
+
     <div id="chatWindow" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
     <form id="messageForm">
         <input type="text" id="messageInput" placeholder="Type a message" required>
