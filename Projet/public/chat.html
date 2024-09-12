@@ -12,13 +12,12 @@
             const urlParams = new URLSearchParams(window.location.search);
             const username = urlParams.get('username');
 
-            // Redirige vers la page de connexion si le nom d'utilisateur n'est pas fourni
+            // Rediriger si pas de nom d'utilisateur
             if (!username) {
                 window.location.href = '/';
                 return;
             }
 
-            // Envoyer le nom d'utilisateur au serveur
             socket.emit('setUsername', username, (response) => {
                 if (!response.success) {
                     alert(response.message);
@@ -29,34 +28,55 @@
             const messageForm = document.getElementById('messageForm');
             const messageInput = document.getElementById('messageInput');
             const chatWindow = document.getElementById('chatWindow');
-            const userList = document.getElementById('userList');
+            const fileInput = document.getElementById('fileInput');
 
-            // Envoyer un message lorsque le formulaire est soumis
+            // Envoyer un message
             messageForm.addEventListener('submit', (event) => {
-                event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+                event.preventDefault();
                 const message = messageInput.value;
-                // Envoyer le message au serveur
                 socket.emit('sendMessage', message);
-                messageInput.value = ''; // Réinitialiser le champ de saisie
+                messageInput.value = '';
             });
 
-            // Afficher les messages reçus
+            // Afficher les messages
             socket.on('receiveMessage', (data) => {
-                const { user, message } = data;
-                chatWindow.innerHTML += `<p><strong>${user}:</strong> ${message}</p>`;
-                chatWindow.scrollTop = chatWindow.scrollHeight; // Faire défiler vers le bas
+                const { user, message, time } = data;
+                chatWindow.innerHTML += `<p><strong>${time} ${user}:</strong> ${message}</p>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             });
 
-            // Mettre à jour la liste des utilisateurs connectés
-            socket.on('updateUserList', (users) => {
-                userList.innerHTML = users.map(user => `<li>${user}</li>`).join('');
+            // Gérer les fichiers envoyés
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => response.text())
+                    .then(result => {
+                        alert(result);
+                        socket.emit('sendFile', file.name);
+                    }).catch(error => console.error('Erreur:', error));
+                }
             });
 
-            // Déconnexion de l'utilisateur
-            const logoutButton = document.getElementById('logoutButton');
-            logoutButton.addEventListener('click', () => {
-                socket.emit('disconnectUser', username); // Informer le serveur de la déconnexion
-                window.location.href = '/'; // Rediriger vers la page d'accueil (index.html)
+            // Afficher les fichiers reçus
+            socket.on('fileReceived', (fileName) => {
+                chatWindow.innerHTML += `<p><strong>Fichier reçu :</strong> <a href="/uploads/${fileName}" download>${fileName}</a></p>`;
+            });
+
+            // Déconnexion manuelle
+            document.getElementById('logoutButton').addEventListener('click', () => {
+                socket.emit('disconnectUser');
+                window.location.href = '/';
+            });
+
+            // Afficher une erreur si le fichier n'est pas disponible
+            socket.on('fileError', (errorMessage) => {
+                alert(errorMessage);
             });
         });
     </script>
@@ -64,17 +84,11 @@
 <body>
     <h1>Chat Room</h1>
     <div id="chatWindow" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
-    
-    <!-- Formulaire pour envoyer des messages -->
     <form id="messageForm">
         <input type="text" id="messageInput" placeholder="Type a message" required>
-        <button type="submit">Send</button>
+        <button type="submit">Envoyer</button>
     </form>
-
-    <!-- Liste des utilisateurs connectés -->
-    <ul id="userList"></ul>
-
-    <!-- Bouton de déconnexion -->
-    <button id="logoutButton">Déconnexion</button>
+    <input type="file" id="fileInput" style="margin-top: 20px;">
+    <button id="logoutButton" style="margin-top: 20px;">Déconnexion</button>
 </body>
 </html>
