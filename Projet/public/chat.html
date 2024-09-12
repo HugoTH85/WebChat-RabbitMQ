@@ -28,6 +28,7 @@
             const messageInput = document.getElementById('messageInput');
             const chatWindow = document.getElementById('chatWindow');
             const fileInput = document.getElementById('fileInput');
+            const fileLabel = document.getElementById('fileLabel');  // Label pour le fichier
             const userList = document.getElementById('userList');
 
             // Envoyer un message
@@ -108,6 +109,15 @@
             max-width: 200px;
         }
 
+        /* Rendre les éléments de la liste des utilisateurs transparents */
+        #userList li {
+            list-style: none;
+            background-color: transparent;  /* Arrière-plan transparent */
+            padding: 5px;
+            margin-bottom: 5px;
+            color: #000;  /* Couleur du texte */
+        }
+
         #chatContainer {
             flex: 3;
             display: flex;
@@ -131,10 +141,54 @@
             flex-grow: 1;
             padding: 10px;
             border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #messageForm button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #messageForm button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Amélioration du bouton pour envoyer un fichier */
+        #fileLabel {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #fileLabel:hover {
+            background-color: #0056b3;
         }
 
         #fileInput {
+            display: none; /* Masquer le champ de fichier natif */
+        }
+
+        #logoutButton {
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             margin-top: 20px;
+        }
+
+        #logoutButton:hover {
+            background-color: darkred;
         }
     </style>
 </head>
@@ -153,6 +207,8 @@
                 <input type="text" id="messageInput" placeholder="Tapez un message" required>
                 <button type="submit">Envoyer</button>
             </form>
+            <!-- Amélioration du bouton d'envoi de fichier -->
+            <label id="fileLabel" for="fileInput">Choisir un fichier</label>
             <input type="file" id="fileInput">
             <button id="logoutButton">Déconnexion</button>
         </div>
