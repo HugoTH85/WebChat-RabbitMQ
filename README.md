@@ -16,11 +16,16 @@ Ce projet est une application de chat basée sur le web, structurée en composan
 ### 2. Composants Clés
 
 Frontend :
+
 Fichiers HTML (chat.html et index.html) qui fournissent la structure de l'interface utilisateur de l'application.
 Fichiers CSS (style-chat.css et style-index.css) qui définissent le style de l'interface de chat et de la page d'accueil, assurant un design réactif.
+
 Backend :
+
 server.js : Le fichier backend principal, gérant les requêtes et les connexions WebSocket pour la fonctionnalité de chat en temps réel.
+
 Configuration :
+
 Le fichier docker-compose.yml orchestre les conteneurs Docker, garantissant que l'application peut être exécutée de manière cohérente dans différents environnements.
 
 ### 3. Flux de Travail
