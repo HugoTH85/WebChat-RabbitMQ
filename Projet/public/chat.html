@@ -11,7 +11,7 @@
             const socket = io();
             const urlParams = new URLSearchParams(window.location.search);
             const username = urlParams.get('username');
-            const topic = urlParams.get('topic') || 'Général';  // Par défaut un topic 'Général'
+            const topic = urlParams.get('topic') || 'default';  // Par défaut un topic 'default'
 
             if (!username) {
                 window.location.href = '/';
@@ -28,7 +28,7 @@
                         if (!response.success) {
                             alert(response.message);
                             // Si le topic n'existe pas, rejoindre le topic par défaut
-                            socket.emit('joinTopic', 'Général', (response) => {
+                            socket.emit('joinTopic', 'default', (response) => {
                                 if (!response.success) {
                                     alert('Erreur lors de la connexion au topic par défaut');
                                 }
@@ -51,7 +51,7 @@
 
             // Envoyer un message
             messageForm.addEventListener('submit', (event) => {
-                event.preventGénéral();
+                event.preventDefault();
                 const message = messageInput.value;
                 socket.emit('sendMessage', message);
                 messageInput.value = '';
@@ -107,7 +107,7 @@
 
             // Gestion du formulaire de création de topic
             document.getElementById('topicForm').addEventListener('submit', (event) => {
-                event.preventGénéral();
+                event.preventDefault();
                 const topicTitle = document.getElementById('topicInput').value;
 
                 // Vérifier si le topic est valide et doit être créé
@@ -126,7 +126,7 @@
             });
 
             topicForm.addEventListener('submit', (event) => {
-                event.preventGénéral();
+                event.preventDefault();
                 const topicTitle = topicInput.value;
 
                 // Créer le topic

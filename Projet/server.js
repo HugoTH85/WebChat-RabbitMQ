@@ -98,18 +98,18 @@ io.on('connection', (socket) => {
             users[username].channel = channel;
     
             // Si aucun topic par défaut n'existe, on en crée un
-            if (!topics.includes('Général')) {
-                topics.push('Général');
+            if (!topics.includes('default')) {
+                topics.push('default');
             }
     
             callback({ success: true, color: userColor });
             io.emit('updateUserList', Object.keys(users));
             socket.emit('updateTopicList', topics);
     
-            // Rejoindre automatiquement le topic "Général"
-            socket.join('Général');
-            socket.currentTopic = 'Général';
-            socket.emit('receiveMessage', { user: 'Serveur', message: `Vous avez rejoint le topic Général` });
+            // Rejoindre automatiquement le topic "default"
+            socket.join('default');
+            socket.currentTopic = 'default';
+            socket.emit('receiveMessage', { user: 'Serveur', message: `Vous avez rejoint le topic default` });
         }
     });
 
@@ -140,7 +140,7 @@ io.on('connection', (socket) => {
     // Gérer la réception des messages
     socket.on('sendMessage', async (message) => {
         const fullMessage = { user: socket.username, message, color: users[socket.username].color };
-        const topic = socket.currentTopic || 'Général';
+        const topic = socket.currentTopic || 'default';
     
         if (users[socket.username] && users[socket.username].channel) {
             // Envoyer le message à la file du topic
