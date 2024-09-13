@@ -16,6 +16,8 @@ const RABBITMQ_URL = 'amqp://rabbitmq';  // L'URL de RabbitMQ dans Docker
 // Stocker les utilisateurs connectés et leurs couleurs
 let users = {};
 
+let topics = [];
+
 // Configurer multer pour l'upload des fichiers avec le nom original
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -66,12 +68,12 @@ app.post('/upload', upload.single('file'), (req, res) => {
 });
 
 // Fonction pour se connecter à RabbitMQ pour un utilisateur
-async function connectToRabbitMQ(username) {
+async function connectToRabbitMQ(username, topic) {
     try {
         const connection = await amqp.connect(RABBITMQ_URL);
         const channel = await connection.createChannel();
-        await channel.assertQueue('chat_queue', { durable: true });
-        console.log(`${username} est connecté à RabbitMQ`);
+        await channel.assertQueue(`chat_queue_${topic}`, { durable: true });
+        console.log(`${username} est connecté à RabbitMQ sur le topic ${topic}`);
 
         return { connection, channel };
     } catch (error) {
@@ -87,27 +89,65 @@ io.on('connection', (socket) => {
         if (users[username]) {
             callback({ success: false, message: 'Nom déjà pris' });
         } else {
-            const userColor = getUserColor(username);  // Générer une couleur unique pour l'utilisateur
+            const userColor = getUserColor(username);
             users[username] = { socketId: socket.id, color: userColor };
             socket.username = username;
-
-            // Connexion à RabbitMQ pour cet utilisateur
+    
             const { connection, channel } = await connectToRabbitMQ(username);
             users[username].connection = connection;
             users[username].channel = channel;
-
-            callback({ success: true, color: userColor });  // Envoyer la couleur de l'utilisateur au client
+    
+            // Si aucun topic par défaut n'existe, on en crée un
+            if (!topics.includes('Général')) {
+                topics.push('Général');
+            }
+    
+            callback({ success: true, color: userColor });
             io.emit('updateUserList', Object.keys(users));
+            socket.emit('updateTopicList', topics);
+    
+            // Rejoindre automatiquement le topic "Général"
+            socket.join('Général');
+            socket.currentTopic = 'Général';
+            socket.emit('receiveMessage', { user: 'Serveur', message: `Vous avez rejoint le topic Général` });
         }
     });
 
+    socket.on('createTopic', (topicTitle) => {
+        if (topicTitle && !topics.includes(topicTitle)) {
+            topics.push(topicTitle);  // Ajouter le topic au tableau
+            io.emit('updateTopicList', topics);  // Notifier tous les utilisateurs
+        }
+    });
+
+    socket.on('joinTopic', (topicTitle, callback) => {
+        if (topicTitle && topics.includes(topicTitle)) {
+            if (socket.currentTopic) {
+                socket.leave(socket.currentTopic);
+                socket.emit('receiveMessage', { user: 'Serveur', message: `Vous avez quitté le topic ${socket.currentTopic}` });
+            }
+
+            // Rejoindre le nouveau topic et mettre à jour l'URL côté client
+            socket.join(topicTitle);
+            socket.currentTopic = topicTitle;
+            callback({ success: true, topic: topicTitle });
+            socket.emit('receiveMessage', { user: 'Serveur', message: `Vous avez rejoint le topic ${topicTitle}` });
+        } 
+    });
+
+
+
     // Gérer la réception des messages
     socket.on('sendMessage', async (message) => {
-        const fullMessage = { user: socket.username, message, color: users[socket.username].color };  // Supprimer l'heure côté serveur
+        const fullMessage = { user: socket.username, message, color: users[socket.username].color };
+        const topic = socket.currentTopic || 'Général';
+    
         if (users[socket.username] && users[socket.username].channel) {
-            await users[socket.username].channel.sendToQueue('chat_queue', Buffer.from(JSON.stringify(fullMessage)));
+            // Envoyer le message à la file du topic
+            await users[socket.username].channel.sendToQueue(`chat_queue_${topic}`, Buffer.from(JSON.stringify(fullMessage)));
         }
-        io.emit('receiveMessage', fullMessage);  // Envoyer le message sans l'heure
+        // Envoyer le message aux utilisateurs du même topic
+        io.to(topic).emit('receiveMessage', fullMessage);
     });
 
     // Gérer la déconnexion manuelle

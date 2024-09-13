@@ -101,7 +101,7 @@ button:hover {
 }
 
 /* Style de la liste des utilisateurs */
-#usersContainer {
+#usersContainer,  #topicsContainer {
     flex: 1;
     border: 1px solid #ddd; /* Bordure plus légère */
     padding: 15px;
@@ -111,6 +111,7 @@ button:hover {
     max-width: 220px; /* Augmenté pour un peu plus d'espace */
     border-radius: 8px; /* Coins arrondis */
 }
+
 
 #userList li {
     list-style: none;
@@ -125,6 +126,25 @@ button:hover {
 #userList li:hover {
     background-color: rgba(0, 123, 255, 0.2); /* Accentuation du bleu au survol */
     color: #007bff; /* Texte coloré au survol */
+}
+
+
+#topicList {
+    padding: 10px; /* Ajouter un peu de padding pour espacer le texte */
+    list-style: none; /* Supprimer les puces */
+}
+
+#topicList li {
+    border: 1px solid #ddd; /* Bordure légère pour chaque élément */
+    border-radius: 5px; /* Coins arrondis pour chaque élément */
+    padding: 10px; /* Espacement à l'intérieur du rectangle */
+    margin-bottom: 10px; /* Espace entre les éléments */
+    cursor: pointer; /* Ajouter un pointeur pour les éléments cliquables */
+    transition: background-color 0.3s; /* Transition douce pour le changement de couleur */
+}
+
+#topicList li:hover {
+    background-color: #f0f0f0; /* Couleur de fond au survol pour un retour visuel */
 }
 
 /* Style du conteneur de chat */
@@ -156,8 +176,14 @@ button:hover {
     gap: 10px; /* Espacement entre l'input et le bouton */
 }
 
+#topicForm {
+    display: flex;
+    gap: 10px; /* Espacement entre l'input et le bouton */
+    flex-direction: column;
+}
+
 /* Champ de saisie */
-#messageInput {
+#messageInput, #topicInput {
     flex-grow: 1;
     padding: 10px;
     border: 1px solid #ccc;
@@ -168,12 +194,12 @@ button:hover {
     transition: border 0.3s ease;
 }
 
-#messageInput:focus {
+#messageInput:focus, #topicInput:focus {
     border-color: #007bff; /* Changement de couleur au focus */
 }
 
 /* Bouton d'envoi */
-#messageForm button {
+#messageForm button,  #topicForm button{
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -183,7 +209,7 @@ button:hover {
     transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
-#messageForm button:hover {
+#messageForm button:hover, #topicForm button:hover  {
     background-color: #ef8f08;
     transform: translateY(-2px); /* Légère animation de mouvement */
 }

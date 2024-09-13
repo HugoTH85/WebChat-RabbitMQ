@@ -12,16 +12,18 @@
 
             const form = document.getElementById('loginForm');
             const usernameInput = document.getElementById('username');
+            const topicInput = document.getElementById('topic');  // Ajout du champ pour le topic
 
             form.addEventListener('submit', (event) => {
-                event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+                event.preventDefault();  // Empêche la soumission normale du formulaire
                 const username = usernameInput.value;
+                const topic = topicInput.value || 'default';  // Si aucun topic, utiliser 'default'
 
-                // Envoyer le nom d'utilisateur au serveur pour vérification
+                // Envoyer le nom d'utilisateur et le topic au serveur pour vérification
                 socket.emit('setUsername', username, (response) => {
                     if (response.success) {
-                        // Rediriger vers la page de chat si le nom est disponible
-                        window.location.href = `/chat.html?username=${encodeURIComponent(username)}`;
+                        // Rediriger vers la page de chat avec le nom d'utilisateur et le topic dans l'URL
+                        window.location.href = `/chat.html?username=${encodeURIComponent(username)}&topic=${encodeURIComponent(topic)}`;
                     } else {
                         // Afficher un message d'erreur si le nom est déjà pris
                         alert(response.message);
@@ -35,6 +37,8 @@
     <form id="loginForm">
         <label for="username">Entrez votre Identifiant :</label>
         <input type="text" id="username" required>
+        <label for="topic">Choisissez un topic (ou laissez vide pour 'default') :</label>
+        <input type="text" id="topic">
         <button type="submit">Se connecter</button>
     </form>
 </body>

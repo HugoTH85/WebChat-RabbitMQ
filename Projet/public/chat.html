@@ -11,6 +11,7 @@
             const socket = io();
             const urlParams = new URLSearchParams(window.location.search);
             const username = urlParams.get('username');
+            const topic = urlParams.get('topic') || 'Général';  // Par défaut un topic 'Général'
 
             if (!username) {
                 window.location.href = '/';
@@ -21,6 +22,19 @@
                 if (!response.success) {
                     alert(response.message);
                     window.location.href = '/';
+                } else {
+                    const topicFromURL = topic;  // Topic récupéré de l'URL
+                    socket.emit('joinTopic', topicFromURL, (response) => {
+                        if (!response.success) {
+                            alert(response.message);
+                            // Si le topic n'existe pas, rejoindre le topic par défaut
+                            socket.emit('joinTopic', 'Général', (response) => {
+                                if (!response.success) {
+                                    alert('Erreur lors de la connexion au topic par défaut');
+                                }
+                            });
+                        }
+                    });
                 }
             });
 
@@ -31,9 +45,13 @@
             const fileLabel = document.getElementById('fileLabel');  // Label pour le fichier
             const userList = document.getElementById('userList');
 
+            const topicForm = document.getElementById('topicForm');
+            const topicInput = document.getElementById('topicInput');
+            const topicList = document.getElementById('topicList');
+
             // Envoyer un message
             messageForm.addEventListener('submit', (event) => {
-                event.preventDefault();
+                event.preventGénéral();
                 const message = messageInput.value;
                 socket.emit('sendMessage', message);
                 messageInput.value = '';
@@ -87,6 +105,73 @@
                 window.location.href = '/';
             });
 
+            // Gestion du formulaire de création de topic
+            document.getElementById('topicForm').addEventListener('submit', (event) => {
+                event.preventGénéral();
+                const topicTitle = document.getElementById('topicInput').value;
+
+                // Vérifier si le topic est valide et doit être créé
+                socket.emit('createTopic', topicTitle);
+
+                // Essayer de rejoindre le topic après l'avoir crééx
+                socket.emit('joinTopic', topicTitle, (response) => {
+                    if (response.success) {
+                        console.log(`Rejoint le topic ${response.topic}`);
+                    } else {
+                        alert(response.message);
+                    }
+                });
+
+                document.getElementById('topicInput').value = '';  // Réinitialiser le champ input
+            });
+
+            topicForm.addEventListener('submit', (event) => {
+                event.preventGénéral();
+                const topicTitle = topicInput.value;
+
+                // Créer le topic
+                socket.emit('createTopic', topicTitle);
+
+                // Essayer de rejoindre le topic après l'avoir créé
+                socket.emit('joinTopic', topicTitle, (response) => {
+                    if (response.success) {
+                        // Mettre à jour l'URL avec le nouveau topic
+                        const newUrl = `${window.location.pathname}?username=${username}&topic=${topicTitle}`;
+                        window.history.pushState({}, '', newUrl);
+                    } else {
+                        alert(response.message);
+                    }
+                });
+
+                topicInput.value = '';  // Réinitialiser le champ input
+            });
+
+            socket.on('updateTopicList', (topics) => {
+                const topicList = document.getElementById('topicList');
+                topicList.innerHTML = '';
+                topics.forEach(topic => {
+                    const li = document.createElement('li');
+                    li.textContent = topic;
+                    li.style.cursor = 'pointer';  // Ajoute un pointeur pour rendre le topic cliquable
+
+                    li.addEventListener('click', () => {
+                        // Lorsque l'utilisateur clique sur un topic, il rejoint ce topic
+                        socket.emit('joinTopic', topic, (response) => {
+                            if (response.success) {
+                                // Mise à jour de l'URL avec le nouveau topic
+                                const newUrl = `${window.location.pathname}?username=${username}&topic=${topic}`;
+                                window.history.pushState({}, '', newUrl);
+                                console.log(`Rejoint le topic ${response.topic}`);
+                            } else {
+                                alert(response.message);
+                            }
+                        });
+                    });
+
+                    topicList.appendChild(li);
+                });
+            });
+            
             socket.on('fileError', (errorMessage) => {
                 alert(errorMessage);
             });
@@ -94,7 +179,6 @@
     </script>
 </head>
 <body>
-    <h1>Le Chat du Bled</h1>
     <div class="container">
         <!-- Liste des utilisateurs connectés à gauche -->
         <div id="usersContainer">
@@ -102,17 +186,27 @@
             <ul id="userList"></ul>
         </div>
 
-        <!-- Zone de chat à droite -->
+        <!-- Zone de chat au milieu -->
         <div id="chatContainer">
             <div id="chatWindow"></div>
             <form id="messageForm">
                 <input type="text" id="messageInput" placeholder="Tapez un message" required>
                 <button type="submit">Envoyer</button>
             </form>
-            <!-- Amélioration du bouton d'envoi de fichier -->
             <label id="fileLabel" for="fileInput">Choisir un fichier</label>
             <input type="file" id="fileInput">
             <button id="logoutButton">Déconnexion</button>
+        </div>
+
+        <!-- Liste des topics à droite -->
+        <div id="topicsContainer">
+            <!-- Formulaire pour créer un nouveau topic en haut -->
+            <h3>Topics :</h3>
+            <form id="topicForm">
+                <input type="text" id="topicInput" placeholder="Créer un nouveau topic" required>
+                <button type="submit">Créer le topic</button>
+            </form>
+            <ul id="topicList"></ul>
         </div>
     </div>
 </body>
