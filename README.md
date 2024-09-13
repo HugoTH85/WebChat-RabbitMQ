@@ -56,7 +56,7 @@ Exécution Locale : Ouvrez ces pages web :
 localhost:3000 #Interface du Chat
 ```
 ```bash
-localhost:15672 #Interface du Chat
+localhost:15672 #Interface RabbitMQ
 ```
 
 ### 2. Structure du Projet
