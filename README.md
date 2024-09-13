@@ -35,7 +35,8 @@ Node.js : Serveur backend pour gérer les requêtes et les connexions WebSocket.
 Docker : Plateforme de containerisation pour un déploiement cohérent.
 HTML/CSS : Structure et style du frontend.
 WebSockets : Probablement utilisé pour la fonctionnalité de chat en temps réel.
-Documentation Technique
+
+## Documentation Technique
 
 ### 1. Installation et Configuration
 
